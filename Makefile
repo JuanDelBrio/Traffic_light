@@ -1,24 +1,19 @@
-ENTITY=traffic_light_TB
-ARCHITECTURE=behavior
-
-SRC=TrafficLight.vhd $(ENTITY).vhd
-
+MAIN=traffic_light_TB
 VCD_FILE=TL_wave.vcd
-
 GHDL=ghdl
 FLAGS=--std=08
 
-all: analyze elaborate run
+all: analyze elaborate run clean
 
 analyze:
 	$(GHDL) -a $(FLAGS) TrafficLight.vhd
-	$(GHDL) -a $(FLAGS) $(ENTITY).vhd
+	$(GHDL) -a $(FLAGS) $(MAIN).vhd
 
 elaborate:
-	$(GHDL) -e $(FLAGS) $(ENTITY)
+	$(GHDL) -e $(FLAGS) $(MAIN)
 
 run:
-	$(GHDL) -r $(FLAGS) $(ENTITY) --vcd=$(VCD_FILE)
+	$(GHDL) -r $(FLAGS) $(MAIN) --vcd=$(VCD_FILE)
 
 clean:
-	-rm -v *.o *.cf $(ENTITY) $(VCD_FILE) ghdl*.cf work*.cf || true
+	-rm -v *.o *.cf
