@@ -19,7 +19,8 @@ ARCHITECTURE behavior OF traffic_light IS
 	SIGNAL previous_state, current_state, next_state: tl_state;
 	SIGNAL timer: integer := 0;
 	SIGNAL idle_blinker_counter: integer:= 0;
-BEGIN
+	--SIGNAL idle_blink : std_logic := '0';
+	BEGIN
 	state_sequence: PROCESS(clk, reset) --states order and timer settings
 	BEGIN
 	
@@ -49,22 +50,20 @@ BEGIN
 	
 	idle_blinker: PROCESS(clk, reset)
 	BEGIN
-	
 		IF reset = '1' THEN
 			idle_blinker_counter <= 0;
 		ELSIF rising_edge(clk) THEN
 			IF idle_mode = '1' THEN
-				idle_blinker_counter <= idle_blinker_counter + 1;
-				IF idle_blinker_counter >= 20 THEN
+				IF idle_blinker_counter = 13 THEN
 					idle_blinker_counter <= 0;
+				ELSE
+					idle_blinker_counter <= idle_blinker_counter + 1;
 				END IF;
 			ELSE
 				idle_blinker_counter <= 0;
 			END IF;
 		END IF;
-		
 	END PROCESS;
-
 
 	state_trasition: PROCESS(current_state) 
 	BEGIN
@@ -86,18 +85,21 @@ BEGIN
 	END PROCESS;
 	
 	
-	tl_output: PROCESS(current_state) 
+	tl_output: PROCESS(current_state, idle_mode, idle_blinker_counter) 
 	BEGIN
 		--TL default: all off
 		TL1_g <= '0'; TL1_y <= '0'; TL1_r <= '0';
 		TL2_g <= '0'; TL2_y <= '0'; TL2_r <= '0';
 				
-		IF idle_mode = '1' THEN
-			IF idle_blinker_counter < 10 THEN
-				TL1_y <= '1';
-				TL2_y <= '1';
-			END IF;
+	IF idle_mode = '1' THEN
+		IF idle_blinker_counter < 7 THEN
+			TL1_y <= '1';
+			TL2_y <= '1';
 		ELSE
+			TL1_y <= '0';
+			TL2_y <= '0';
+		END IF;
+	ELSE
 			CASE current_state IS
 				WHEN first_g => TL1_g <= '1'; TL2_r <= '1'; 
 				WHEN first_y => TL1_y <= '1'; TL2_r <= '1';
@@ -107,7 +109,6 @@ BEGIN
 				WHEN idle => NULL;
 			END CASE;
 		END IF;
-		
 	END PROCESS;
 	
 	
