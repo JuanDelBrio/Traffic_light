@@ -3,7 +3,7 @@ ARCHITECTURE=behavior
 
 SRC=$(ENTITY).vhdl
 
-VCD_FILE=wave.vcd
+VCD_FILE=TL_wave.vcd
 
 GHDL=ghdl
 FLAGS=--std=08
